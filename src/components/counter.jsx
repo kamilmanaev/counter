@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 export const Counter = () => {
   const [count, setCount] = useState(0);
   const [items, setItems] = useState([
@@ -8,9 +8,10 @@ export const Counter = () => {
     { id: 4, name: "Тарелка", count: 0 },
     { id: 5, name: "набор минималиста", count: 0 },
   ]);
-
+  useEffect(() => {
+    setCount(items.reduce((acc, cur) => (acc += cur.count), 0));
+  }, [items]);
   const formatCounter = (count) => {
-    console.log(count);
     return count === 0 ? "empty" : count;
   };
 
@@ -30,60 +31,49 @@ export const Counter = () => {
   };
 
   const handleDecrement = (id) => {
-    if (count > 0) {
-      setItems((item) => item.count - 1);
-    }
-  };
-  const renderTAgs = () => {
-    if (items.length > 0) {
-      return (
-        <>
-          {items.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => {
-                handleRemoveItems(item.id);
-              }}
-            >
-              {item.name}
-              <div className={getBAdgesClasses()}>
-                {formatCounter(item.count)}
-              </div>
-              <button
-                className="btn btn-primary btn-sm m-2"
-                onClick={handleIncrement}
-              >
-                +
-              </button>
-              <button
-                className="btn btn-primary btn-sm m-2"
-                onClick={handleDecrement}
-              >
-                -
-              </button>
-              <button onClick={handleRemoveItems}>удалить</button>
-            </div>
-          ))}
-        </>
-      );
-    } else return <span>no items</span>;
+    setItems((prevState) => {
+      return prevState.map((item) => {
+        if (item.count === 0) {
+          return item;
+        }
+        if (id === item.id) {
+          return { ...item, count: item.count - 1 };
+        } else return item;
+      });
+    });
   };
   const handleResetItems = () => {
-    setItems([]);
+    setItems([
+      { id: 1, name: "ненужая вещь", count: 0 },
+      { id: 2, name: "Ложка", count: 0 },
+      { id: 3, name: "Вилка", count: 0 },
+      { id: 4, name: "Тарелка", count: 0 },
+      { id: 5, name: "набор минималиста", count: 0 },
+    ]);
   };
   const handleRemoveItems = (id) => {
     setItems((items) => items.filter((item) => id !== item.id));
   };
 
   const clearCounter = () => {
-    items.map((item) => {
-      item.count = 0;
-    });
+    setItems((prevState) => prevState.map((item) => ({ ...item, count: 0 })));
   };
 
   return (
     <div className="container ">
-      <nav className="navbar navbar-expand-lg bg-body-tertiary"></nav>{" "}
+      <nav className="navbar navbar-expand-lg bg-body-tertiary row">
+        <div className="col">Navbar</div>
+        <div className="col"></div>
+        <div className="col">
+          корзина
+          <div className="badge position-relative">
+            <span className="position-absolute bottom-0 start-4 translate-middle badge rounded-pill bg-danger">
+              {count}
+            </span>
+          </div>
+        </div>
+      </nav>
+
       {items.length > 0 ? (
         items.map((item) => (
           <div key={item.id} className="d-flex justify-content-between row">
@@ -96,18 +86,24 @@ export const Counter = () => {
             <div className="col">
               <button
                 className="btn btn-primary m-2"
-                onClick={() => handleIncrement(item.id)}
+                onClick={() => {
+                  handleIncrement(item.id);
+                }}
               >
                 +
               </button>
               <button
                 className="btn btn-primary m-2 "
-                onClick={handleDecrement}
+                onClick={() => {
+                  handleDecrement(item.id);
+                }}
               >
                 -
               </button>
               <button
-                onClick={() => handleRemoveItems(item.id)}
+                onClick={() => {
+                  handleRemoveItems(item.id);
+                }}
                 className="btn btn-secondary "
               >
                 <svg
@@ -132,25 +128,36 @@ export const Counter = () => {
         <div className="col"></div>
         <div className="col"></div>
         <div className="col">
-          <button className="btn btn-primary" onClick={handleResetItems}>
-            очистить
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              handleResetItems();
+            }}
+          >
+            очистить{" "}
           </button>
-          <button className="btn btn-primary m-2" onClick={clearCounter}>
+          <button
+            className="btn btn-primary m-2"
+            onClick={() => {
+              clearCounter();
+            }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"
               fill="currentColor"
-              class="bi bi-arrow-clockwise"
+              className="bi bi-arrow-clockwise"
               viewBox="0 0 16 16"
+              style={{ transform: "rotate(45deg)" }}
             >
               <path
-                fill-rule="evenodd"
+                fillRule="evenodd"
                 d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"
               />
               <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466" />
             </svg>
-            <i class="bi bi-arrow-clockwise">refresh</i>
+            <i className="bi bi-arrow-clockwise">refresh</i>
           </button>
         </div>
       </div>
