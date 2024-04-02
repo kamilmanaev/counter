@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { App as AppCounter } from "./App";
+// eslint-disable-next-line
 import "bootstrap/dist/css/bootstrap.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

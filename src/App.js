@@ -1,9 +1,9 @@
-import { Counter } from "./components/counter";
+import { Basket } from "./components/basket";
 
 export function App() {
   return (
     <div>
-      <Counter />
+      <Basket />
     </div>
   );
 }
